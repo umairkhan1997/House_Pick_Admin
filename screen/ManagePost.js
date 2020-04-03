@@ -8,7 +8,7 @@ import { Root, Icon, Drawer, Item, Header, Body, Card, Left, Right, Button, Pick
 import { Platform } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/firestore';
-
+import MEIcon from 'react-native-vector-icons/AntDesign';
 class ManagePost extends React.Component {
     static navigationOptions = {
         header: null,
@@ -35,10 +35,13 @@ class ManagePost extends React.Component {
         firebase.firestore().collection('post').doc(id).delete().then(() => {
             let allPosts = this.state.posts;
             allPosts.splice(index, 1)
-            this.setState({posts :allPosts })
+            this.setState({ posts: allPosts })
         })
     }
 
+    editPost = (post) => {
+        this.props.navigation.navigate('UpdatePost', { postData: post })
+    }
     render() {
         const { navigate } = this.props.navigation;
         return (
@@ -70,8 +73,12 @@ class ManagePost extends React.Component {
                                         </TouchableOpacity>
                                         <Text style={{ textAlign: 'center', width: '90%', marginLeft: '5%', marginTop: 10 }}>@palace Kingster</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Text>Edit</Text>
-                                            <Text onPress={() => this.deletePost(item.key, index)}>Delete</Text>
+                                            <TouchableOpacity onPress={() => this.editPost(item)}>
+                                                <Image source={require('../images/edit.png')} style={{ width: 25,marginTop:5, marginRight:20, height: 25 }} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.deletePost(item.key, index)}>
+                                                <Image source={require('../images/delete.png')} style={{ width: 25,marginTop:5,marginLeft:20, height: 25 }} />
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 )

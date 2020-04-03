@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Text, View, StyleSheet, TouchableHighlight, SafeAreaView, Image, TextInput,
+  Text, View, StyleSheet, TouchableHighlight, SafeAreaView, Image, TextInput, ActivityIndicator,
   ImageBackground, Dimensions, KeyboardAvoidingView, ScrollView, TouchableOpacity
 } from 'react-native';
 import { Platform } from 'react-native';
@@ -19,11 +19,11 @@ class AddPost extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: "key1",
+      selected: "home",
       postName: '', postDetail: '',
       imageflag: null, imagesflag: null,
-      imagePost: null, imagesPost: null
-
+      imagePost: null, imagesPost: null,
+      loader: false,
     }
   }
 
@@ -48,6 +48,7 @@ class AddPost extends React.Component {
   // }
 
   getImagess(parOne, parTwo) {
+    let maxImg = parOne === 'imageflag' ? 1 : 3
     ImagePickerss.openPicker({
       multiple: true,
       waitAnimationEnd: false,
@@ -58,7 +59,7 @@ class AddPost extends React.Component {
     }).then(images => {
       this.setState({
         [parOne]: null,
-        [parTwo]: images.map(i => {
+        [parTwo]: images.slice(0, maxImg).map(i => {
           // console.log('received image', i);
           return { uri: i.path, };
         })
@@ -69,31 +70,58 @@ class AddPost extends React.Component {
   addPost = () => {
     let postImagesURLs = [];
     let flagImageURL = '';
-    this.state.imagesPost.map(async (oneImageObj, index) => {
-      let fileRef = `images/file_${new Date().getTime()}`;
-      let flagImageRef = `images/flag_image_${new Date().getTime()}`;
-      await FireBaseStorage.ref(fileRef).putFile(oneImageObj.uri).then(async (res) => {
-        await storage().ref(fileRef).getDownloadURL().then(async (uri) => {
-          postImagesURLs.push(uri)
+    let key = firebase.firestore().collection('post').doc().id
+
+    if (this.state.postName != '' && this.state.postDetail != '' && this.state.imageflag != null && this.state.imagesflag != null && this.state.imagePost != null, this.state.imagesPost != null) {
+
+      this.setState({ loader: true });
+
+      this.state.imagesPost.map(async (oneImageObj, index) => {
+        let fileRef = `images/${key}/file_${new Date().getTime()}`;
+        let flagImageRef = `images/${key}/flag_image_${new Date().getTime()}`;
+        await FireBaseStorage.ref(fileRef).putFile(oneImageObj.uri).then(async (res) => {
+          await storage().ref(fileRef).getDownloadURL().then(async (uri) => {
+            postImagesURLs.push(uri)
+          })
+        })
+        
+        if (this.state.imagesPost.length - 1 == index) {
           await FireBaseStorage.ref(flagImageRef).putFile(this.state.imagesflag[0].uri).then(async (res) => {
-            await storage().ref(fileRef).getDownloadURL().then((flagUri) => {
-              flagImageURL = flagUri
+            await storage().ref(flagImageRef).getDownloadURL().then((flagUri) => {
+              flagImageURL = flagUri;
+              let post = {
+                postName: this.state.postName,
+                postDetail: this.state.postDetail,
+                postImages: postImagesURLs,
+                flagImage: flagImageURL,
+                category: this.state.selected
+              }
+              let postRef = firebase.firestore().collection('post');
+    
+              postRef.doc(key).set(post).then(() => {
+                this.setState({
+                  selected: "key1",
+                  postName: '', postDetail: '',
+                  imageflag: null, imagesflag: null,
+                  imagePost: null, imagesPost: null,
+                  loader: false,
+                })
+                alert('Post Successfully Added')
+              })
             })
           })
-          if (this.state.imagesPost.length - 1 == index) {
-            let post = {
-              postName: this.state.postName,
-              postDetail: this.state.postDetail,
-              postImages: postImagesURLs,
-              flagImage: flagImageURL,
-              category: this.state.selected
-            }
-            let postRef = firebase.firestore().collection('post');
-            postRef.add(post)
-          }
-        })
+         
+
+        }
       })
-    })
+
+
+    } //if close
+    else{
+      alert('Please Fill All Fields and Select Images')
+    }
+
+
   }
 
   renderVideo(video) {
@@ -132,6 +160,7 @@ class AddPost extends React.Component {
 
   uploadImages = () => {
     console.log(this.state)
+    
   }
   render() {
     // console.log(this.state, 'this.state')
@@ -189,7 +218,7 @@ class AddPost extends React.Component {
             {this.state.imageflag ? this.renderAsset(this.state.imageflag) : null}
             {this.state.imagesflag ? this.state.imagesflag.map(i => <View key={i.uri}>{this.renderAsset(i)}</View>) : null}
           </ScrollView>
-          <Button onPress={() => this.getImagess('imageflag', 'imagesflag')} style={{ justifyContent: 'center', backgroundColor: '#ba0916', width: '90%', marginLeft: '5%' }}>
+          <Button disabled={this.state.loader} onPress={() => this.getImagess('imageflag', 'imagesflag')} style={{ justifyContent: 'center', backgroundColor: '#ba0916', width: '90%', marginLeft: '5%' }}>
             {
               this.state.imagesflag ?
                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Select to Change Image for Flag</Text>
@@ -203,7 +232,7 @@ class AddPost extends React.Component {
             {this.state.imagePost ? this.renderAsset(this.state.imagePost) : null}
             {this.state.imagesPost ? this.state.imagesPost.map(i => <View key={i.uri}>{this.renderAsset(i)}</View>) : null}
           </ScrollView>
-          <Button onPress={() => this.getImagess('imagePost', 'imagesPost')} style={{ justifyContent: 'center', backgroundColor: '#ba0916', width: '90%', marginLeft: '5%' }}>
+          <Button disabled={this.state.loader} onPress={() => this.getImagess('imagePost', 'imagesPost')} style={{ justifyContent: 'center', backgroundColor: '#ba0916', width: '90%', marginLeft: '5%' }}>
             {
               this.state.imagesPost ?
                 <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Select to Change Image for Post</Text>
@@ -212,13 +241,16 @@ class AddPost extends React.Component {
             }
           </Button>
 
+          {
+            this.state.loader ? <ActivityIndicator size={"large"} /> :
 
-          <Button
+              <Button
 
-            onPress={this.addPost}
-            style={{ justifyContent: 'center', backgroundColor: '#238cf3', width: '98%', marginLeft: '1%', marginVertical: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Add Post</Text>
-          </Button>
+                onPress={this.addPost}
+                style={{ justifyContent: 'center', backgroundColor: '#238cf3', width: '98%', marginLeft: '1%', marginVertical: 20 }}>
+                <Text style={{ fontSize: 16, fontWeight: '500', color: 'white' }}>Add Post</Text>
+              </Button>
+          }
         </ScrollView>
       </View>
     );

@@ -21,9 +21,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 
 // SCREENS
-import MainPage from './screen/MainPage'
-import AddPost from './screen/AddPost'
-import ManagePost from './screen/ManagePost'
+import MainPage from './screen/MainPage';
+import AddPost from './screen/AddPost';
+import ManagePost from './screen/ManagePost';
+import UpdatePost from './screen/updatePost';
+
 const Stack = createStackNavigator();
 
 
@@ -33,6 +35,7 @@ function MainStack() {
       <Stack.Screen name="MainPage" component={MainPage} />
       <Stack.Screen name="AddPost" component={AddPost} />
       <Stack.Screen name="ManagePost" component={ManagePost} />
+      <Stack.Screen name="UpdatePost" component={UpdatePost} />
     </Stack.Navigator>
   );
 };
