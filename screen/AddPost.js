@@ -69,7 +69,6 @@ class AddPost extends React.Component {
   addPost = () => {
     let postImagesURLs = [];
     let flagImageURL = '';
-    console.log('imagesflag =', this.state.imagesflag)
     this.state.imagesPost.map(async (oneImageObj, index) => {
       let fileRef = `images/file_${new Date().getTime()}`;
       let flagImageRef = `images/flag_image_${new Date().getTime()}`;
@@ -156,7 +155,7 @@ class AddPost extends React.Component {
                 onValueChange={this.onValueChange.bind(this)}
               >
                 <Picker.Item label="Home" value="home" />
-                <Picker.Item label="Technology" value="tech" />
+                <Picker.Item label="Tech" value="tech" />
                 <Picker.Item label="Men Jewels" value="men_jewels" />
                 <Picker.Item label="Women Jewels" value="women_jewels" />
                 <Picker.Item label="Men in lead" value="men_in_lead" />
