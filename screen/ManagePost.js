@@ -9,6 +9,10 @@ import { Platform } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/firestore';
 import MEIcon from 'react-native-vector-icons/AntDesign';
+import storage from '@react-native-firebase/storage';
+
+export const FireBaseStorage = storage();
+
 class ManagePost extends React.Component {
     static navigationOptions = {
         header: null,
@@ -36,6 +40,13 @@ class ManagePost extends React.Component {
             let allPosts = this.state.posts;
             allPosts.splice(index, 1)
             this.setState({ posts: allPosts })
+        })
+        FireBaseStorage.ref('images/' + id).listAll().then((res) => {
+            console.log(res.items)
+            res.items.forEach((item)=>{
+                console.log(item.path)
+                FireBaseStorage.ref(item.path).delete()
+            }) 
         })
     }
 
@@ -74,10 +85,10 @@ class ManagePost extends React.Component {
                                         <Text style={{ textAlign: 'center', width: '90%', marginLeft: '5%', marginTop: 10 }}>@palace Kingster</Text>
                                         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                                             <TouchableOpacity onPress={() => this.editPost(item)}>
-                                                <Image source={require('../images/edit.png')} style={{ width: 25,marginTop:5, marginRight:20, height: 25 }} />
+                                                <Image source={require('../images/edit.png')} style={{ width: 25, marginTop: 5, marginRight: 20, height: 25 }} />
                                             </TouchableOpacity>
                                             <TouchableOpacity onPress={() => this.deletePost(item.key, index)}>
-                                                <Image source={require('../images/delete.png')} style={{ width: 25,marginTop:5,marginLeft:20, height: 25 }} />
+                                                <Image source={require('../images/delete.png')} style={{ width: 25, marginTop: 5, marginLeft: 20, height: 25 }} />
                                             </TouchableOpacity>
                                         </View>
                                     </View>
