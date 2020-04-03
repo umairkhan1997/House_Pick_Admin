@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "153796857390",
+    "firebase_url": "https://housepick-768c3.firebaseio.com",
+    "project_id": "housepick-768c3",
+    "storage_bucket": "housepick-768c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153796857390:android:946510c683ecc7f9dc19bf",
+        "android_client_info": {
+          "package_name": "com.housepickadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "153796857390-b4q5rbq4b3dvbst341vsh35obd9d77eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhAUFSkOQZCmnnqE_M03EVU_b-TJ7w1JQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153796857390-b4q5rbq4b3dvbst341vsh35obd9d77eq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

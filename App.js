@@ -6,7 +6,7 @@
  * @flow
  */
 
-import React from 'react';
+import React , { useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -25,12 +25,13 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import Main from './Main'
+import firestore from '@react-native-firebase/firestore';
 
 
 
 
 
-const App: () => React$Node = () => {
+const App = () => {
   return (
     <Main />
   );
