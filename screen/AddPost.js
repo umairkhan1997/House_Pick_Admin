@@ -100,7 +100,7 @@ class AddPost extends React.Component {
     
               postRef.doc(key).set(post).then(() => {
                 this.setState({
-                  selected: "key1",
+                  selected: "home",
                   postName: '', postDetail: '',
                   imageflag: null, imagesflag: null,
                   imagePost: null, imagesPost: null,
